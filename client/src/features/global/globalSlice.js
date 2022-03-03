@@ -1,7 +1,8 @@
 import {createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
-  currentUser: null,
+  selectedAddress: "",
+  tokenList: [],
 };
 
 export const globalSlice = createSlice({
@@ -11,11 +12,24 @@ export const globalSlice = createSlice({
     resetState: () => {
       return initialState;
     },
+    setAddress: (state, action) => {
+      state.selectedAddress = action.payload;
+    },
+    addTokenToList: (state, action) => {
+      const token = action.payload;
+      const tokenIndex = state.tokenList.findIndex(
+        (t) => t.value === token.value
+      );
+
+      if (tokenIndex === -1) {
+        state.tokenList.push(token);
+      }
+    },
   },
   extraReducers: (builder) => {},
 });
 
-export const {resetState} = globalSlice.actions;
+export const {resetState, setAddress, addTokenToList} = globalSlice.actions;
 
 export const globalState = (state) => state.global;
 
