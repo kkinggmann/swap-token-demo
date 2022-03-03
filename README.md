@@ -16,8 +16,12 @@ npx hardhat help
 
 # Deploy Smart Contract
 
+```shell
 npx hardhat run scripts/deploy.js --network <network-name>
+```
   
 # Verify Smart Contract
 
+```shell
 npx hardhat verify --constructor-args scripts/arguments.js SMART_CONTRACT_ADDRESS --network <network-name>
+```
