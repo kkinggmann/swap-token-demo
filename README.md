@@ -13,3 +13,11 @@ npx hardhat node
 node scripts/sample-script.js
 npx hardhat help
 ```
+
+# Deploy Smart Contract
+
+npx hardhat run scripts/deploy.js --network <network-name>
+  
+# Verify Smart Contract
+
+npx hardhat verify --constructor-args scripts/arguments.js SMART_CONTRACT_ADDRESS --network <network-name>
