@@ -16,7 +16,9 @@ import SwapTokenArtifact from "../../artifacts/contracts/SwapToken.sol/SwapToken
 import {ethers} from "ethers";
 import {useMemo} from "react";
 
-const HARDHAT_NETWORK_ID = "31337";
+const HARDHAT_NETWORK_ID = "1337";
+const zeroAddress = "0x0000000000000000000000000000000000000000";
+const {utils} = ethers;
 
 function HomePage() {
   const dispatch = useDispatch();
@@ -28,6 +30,7 @@ function HomePage() {
   const [tokenInAmount, setTokenInAmount] = useState(0);
   const [tokenOutAmount, setTokenOutAmount] = useState(0);
   const [tokenRate, setTokenRate] = useState(0);
+  const [errorMessages, setErrorMessages] = useState([]);
 
   const provider = useMemo(
     () => new ethers.providers.Web3Provider(window.ethereum),
@@ -42,7 +45,6 @@ function HomePage() {
         ERC20TokenArtifact.abi,
         signer
       );
-
       return token;
     },
     [signer]
@@ -58,34 +60,44 @@ function HomePage() {
     return tokenPool;
   };
 
-  const tokenPool = getTokenPool("0x1291Be112d480055DaFd8a610b7d1e203891C274");
+  const tokenPool = getTokenPool("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
 
   const getERC20TokenInfo = useCallback(
     async (tokenAddress, userAddress) => {
       const token = getERC20Token(tokenAddress);
       const value = await token.symbol();
-      const balance = await token.balanceOf(userAddress);
       const decimal = await token.decimals();
+      const balance = (
+        (await token.balanceOf(userAddress)) /
+        10 ** decimal
+      ).toString();
+      const poolBalance = (
+        (await token.balanceOf(tokenPool.address)) /
+        10 ** decimal
+      ).toString();
       const address = token.address;
-      return {value, address, balance: (balance / 10 ** decimal).toString()};
+      return {value, address, balance, poolBalance};
     },
-    [getERC20Token]
+    [getERC20Token, tokenPool.address]
   );
 
   useEffect(() => {
-    const inititalTokenList = async (userAddress) => {
+    const inititalTokenList = async (userAddress, poolAddress) => {
       const tokenA = await getERC20TokenInfo(
-        "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
+        "0x5FbDB2315678afecb367f032d93F642f64180aa3",
         userAddress
       );
       const tokenB = await getERC20TokenInfo(
-        "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
+        "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
         userAddress
       );
       const nativeToken = {
         value: "ETH",
-        address: "0x0000000000000000000000000000000000000000",
+        address: zeroAddress,
         balance: ((await provider.getBalance(userAddress)) / 1e18).toString(),
+        poolBalance: (
+          (await provider.getBalance(poolAddress)) / 1e18
+        ).toString(),
       };
 
       dispatch(addTokenToList(tokenA));
@@ -93,10 +105,10 @@ function HomePage() {
       dispatch(addTokenToList(nativeToken));
     };
 
-    if (selectedAddress) {
-      inititalTokenList(selectedAddress);
+    if (selectedAddress && tokenPool) {
+      inititalTokenList(selectedAddress, tokenPool.address);
     }
-  }, [dispatch, getERC20TokenInfo, provider, selectedAddress]);
+  }, [dispatch, getERC20TokenInfo, provider, selectedAddress, tokenPool]);
 
   useEffect(() => {
     if (tokenList.length > 0) {
@@ -205,6 +217,8 @@ function HomePage() {
         const rate = await handleSetRate(token.address, tokenOutOption.address);
         handleSetTokenOutAmount(tokenInAmount, rate);
       }
+
+      setErrorMessages([]);
     }
   };
 
@@ -219,14 +233,92 @@ function HomePage() {
         const rate = await handleSetRate(tokenInOption.address, token.address);
         handleSetTokenOutAmount(tokenInAmount, rate);
       }
+
+      setErrorMessages([]);
     }
   };
 
   const handleChangeTokenInAmount = (e) => {
     if (tokenInOption) {
-      const tokenInAmount = e.target.value;
+      const tokenInAmount = parseFloat(e.target.value);
       setTokenInAmount(tokenInAmount);
       handleSetTokenOutAmount(tokenInAmount, tokenRate);
+      setErrorMessages([]);
+    }
+  };
+
+  const handleSwapToken = async (e) => {
+    e.preventDefault();
+    const errors = [];
+
+    if (!selectedAddress) return;
+
+    if (!tokenInOption || !tokenOutOption) return;
+
+    if (tokenInAmount === 0) {
+      errors.push("Token in amount must be greater than zero");
+    }
+
+    if (tokenOutAmount === 0) {
+      errors.push("Token out amount must be greater than zero");
+    }
+
+    if (tokenInAmount > parseFloat(tokenInOption.balance)) {
+      errors.push("Token in amount must be less than token in balance of user");
+    }
+
+    if (tokenOutAmount > parseFloat(tokenOutOption.poolBalance)) {
+      errors.push(
+        "Token out amount must be less than token out balance of token pool"
+      );
+    }
+
+    if (errors.length > 0) {
+      setErrorMessages(errors);
+      return;
+    }
+
+    try {
+      if (tokenInOption.address === zeroAddress) {
+        const tx = await tokenPool.swap(
+          tokenInOption.address,
+          tokenOutOption.address,
+          0,
+          {
+            value: utils.parseEther(tokenInAmount.toString()),
+          }
+        );
+        //Get event infor
+        const receipt = await tx.wait();
+
+        if (receipt.status) {
+          window.location.reload();
+        }
+        return;
+      }
+
+      const tokenIn = getERC20Token(tokenInOption.address);
+      if (tokenIn) {
+        await tokenIn.approve(
+          tokenPool.address,
+          utils.parseEther(tokenInAmount.toString())
+        );
+
+        const tx = await tokenPool.swap(
+          tokenInOption.address,
+          tokenOutOption.address,
+          utils.parseEther(tokenInAmount.toString())
+        );
+
+        //Get event infor
+        const receipt = await tx.wait();
+
+        if (receipt.status) {
+          window.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -290,7 +382,11 @@ function HomePage() {
                 <Col md={5}>
                   <p className="token-info--text">To</p>
                 </Col>
-                <Col md={7}></Col>
+                <Col md={7}>
+                  <p className="token-info--text-right">
+                    Pool Balance: {tokenOutOption?.poolBalance || 0}
+                  </p>
+                </Col>
                 <Col md={5}>
                   <div className="token-amount__wrapper">
                     <p className="token-amount--text">{tokenOutAmount}</p>
@@ -309,8 +405,15 @@ function HomePage() {
               </Row>
             </div>
           </div>
+          <div className="form-errors">
+            {errorMessages.map((error, key) => (
+              <p key={key}>{error}</p>
+            ))}
+          </div>
           <div className="form-submit">
-            <Button className="btn btn-secondary">Swap</Button>
+            <Button className="btn btn-secondary" onClick={handleSwapToken}>
+              Swap
+            </Button>
           </div>
         </div>
       </div>
