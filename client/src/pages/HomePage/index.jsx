@@ -21,7 +21,13 @@ const HARDHAT_NETWORK_ID = "31337";
 function HomePage() {
   const dispatch = useDispatch();
   const {selectedAddress, tokenList} = useSelector(globalState);
-  const [selectedOption, setSelectedOption] = useState(null);
+  const [tokenInOptionList, setTokenInOptionList] = useState([]);
+  const [tokenOutOptionList, setTokenOutOptionList] = useState([]);
+  const [tokenInOption, setTokenInOption] = useState(null);
+  const [tokenOutOption, setTokenOutOption] = useState(null);
+  const [tokenInAmount, setTokenInAmount] = useState(0);
+  const [tokenOutAmount, setTokenOutAmount] = useState(0);
+  const [tokenRate, setTokenRate] = useState(0);
 
   const provider = useMemo(
     () => new ethers.providers.Web3Provider(window.ethereum),
@@ -52,13 +58,15 @@ function HomePage() {
     return tokenPool;
   };
 
+  const tokenPool = getTokenPool("0x1291Be112d480055DaFd8a610b7d1e203891C274");
+
   const getERC20TokenInfo = useCallback(
     async (tokenAddress, userAddress) => {
       const token = getERC20Token(tokenAddress);
       const value = await token.symbol();
       const balance = await token.balanceOf(userAddress);
       const decimal = await token.decimals();
-      const address = await token.address;
+      const address = token.address;
       return {value, address, balance: (balance / 10 ** decimal).toString()};
     },
     [getERC20Token]
@@ -67,16 +75,16 @@ function HomePage() {
   useEffect(() => {
     const inititalTokenList = async (userAddress) => {
       const tokenA = await getERC20TokenInfo(
-        "0xA51c1fc2f0D1a1b8494Ed1FE312d7C3a78Ed91C0",
+        "0x809d550fca64d94Bd9F66E60752A544199cfAC3D",
         userAddress
       );
       const tokenB = await getERC20TokenInfo(
-        "0x0DCd1Bf9A1b36cE34237eEaFef220932846BCD82",
+        "0x4c5859f0F772848b2D91F1D83E2Fe57935348029",
         userAddress
       );
       const nativeToken = {
         value: "ETH",
-        tokenAddress: "0x0000000000000000000000000000000000000000",
+        address: "0x0000000000000000000000000000000000000000",
         balance: ((await provider.getBalance(userAddress)) / 1e18).toString(),
       };
 
@@ -89,6 +97,13 @@ function HomePage() {
       inititalTokenList(selectedAddress);
     }
   }, [dispatch, getERC20TokenInfo, provider, selectedAddress]);
+
+  useEffect(() => {
+    if (tokenList.length > 0) {
+      setTokenInOptionList(tokenList);
+      setTokenOutOptionList(tokenList);
+    }
+  }, [tokenList]);
 
   const connectWallet = async (e) => {
     e.preventDefault();
@@ -129,10 +144,6 @@ function HomePage() {
     window.location.reload();
   };
 
-  const handleSelectChange = (e) => {
-    setSelectedOption(e);
-  };
-
   const showOptionLabel = (e) => {
     return (
       <div className="token-option-label">
@@ -167,6 +178,58 @@ function HomePage() {
     );
   };
 
+  const handleSetRate = async (tokenInAddress, tokenOutAddress) => {
+    const rateData = await tokenPool.getTokenRate(
+      tokenInAddress,
+      tokenOutAddress
+    );
+    const rate = rateData[0].toNumber() / 10 ** rateData[1];
+    setTokenRate(rate);
+    return rate;
+  };
+
+  const handleSetTokenOutAmount = (tokenInAmount, rate) => {
+    if (tokenOutOption && rate) {
+      const tokenOutAmount = tokenInAmount * rate;
+      setTokenOutAmount(tokenOutAmount || 0);
+    }
+  };
+
+  const handleSelectTokenIn = async (token) => {
+    if (token.address !== tokenOutOption?.address) {
+      setTokenInOption(token);
+      setTokenOutOptionList(
+        tokenList.filter((t) => t.address !== token.address)
+      );
+      if (tokenOutOption) {
+        const rate = await handleSetRate(token.address, tokenOutOption.address);
+        handleSetTokenOutAmount(tokenInAmount, rate);
+      }
+    }
+  };
+
+  const handleSelectTokenOut = async (token) => {
+    if (token.address !== tokenInOption?.address) {
+      setTokenOutOption(token);
+      setTokenInOptionList(
+        tokenList.filter((t) => t.address !== token.address)
+      );
+
+      if (tokenInOption) {
+        const rate = await handleSetRate(tokenInOption.address, token.address);
+        handleSetTokenOutAmount(tokenInAmount, rate);
+      }
+    }
+  };
+
+  const handleChangeTokenInAmount = (e) => {
+    if (tokenInOption) {
+      const tokenInAmount = e.target.value;
+      setTokenInAmount(tokenInAmount);
+      handleSetTokenOutAmount(tokenInAmount, tokenRate);
+    }
+  };
+
   if (window.ethereum === undefined) {
     return (
       <p>
@@ -195,7 +258,7 @@ function HomePage() {
                 </Col>
                 <Col md={7}>
                   <p className="token-info--text-right">
-                    Balance: {selectedOption?.balance || 0}
+                    Balance: {tokenInOption?.balance || 0}
                   </p>
                 </Col>
                 <Col md={5}>
@@ -204,15 +267,18 @@ function HomePage() {
                       type="number"
                       className="token-amount"
                       min="0"
+                      step="0.01"
+                      value={tokenInAmount}
+                      onChange={handleChangeTokenInAmount}
                     />
                   </InputGroup>
                 </Col>
                 <Col md={7}>
                   <Select
-                    placeholder="...Token"
-                    value={selectedOption}
-                    options={tokenList}
-                    onChange={handleSelectChange}
+                    placeholder="Choose token"
+                    value={tokenInOption}
+                    options={tokenInOptionList}
+                    onChange={handleSelectTokenIn}
                     className="token-type"
                     getOptionLabel={showOptionLabel}
                   />
@@ -226,20 +292,16 @@ function HomePage() {
                 </Col>
                 <Col md={7}></Col>
                 <Col md={5}>
-                  <InputGroup>
-                    <FormControl
-                      type="number"
-                      className="token-amount"
-                      min="0"
-                    />
-                  </InputGroup>
+                  <div className="token-amount__wrapper">
+                    <p className="token-amount--text">{tokenOutAmount}</p>
+                  </div>
                 </Col>
                 <Col md={7}>
                   <Select
-                    placeholder="...Token"
-                    value={selectedOption}
-                    options={tokenList}
-                    onChange={handleSelectChange}
+                    placeholder="Choose token"
+                    value={tokenOutOption}
+                    options={tokenOutOptionList}
+                    onChange={handleSelectTokenOut}
                     className="token-type"
                     getOptionLabel={showOptionLabel}
                   />

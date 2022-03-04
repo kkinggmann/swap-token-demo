@@ -22,6 +22,10 @@ describe("SwapToken", function () {
     tokenB = await ERC20Token.deploy("Token B", "TOKB", 100, 18);
     tokenPool = await SwapToken.deploy();
 
+    await tokenA.deployed();
+    await tokenB.deployed();
+    await tokenPool.deployed();
+
     await tokenA.transfer(tokenPool.address, utils.parseEther("0.5"));
     await tokenB.transfer(tokenPool.address, utils.parseEther("0.5"));
     await userX.sendTransaction({

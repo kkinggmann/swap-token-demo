@@ -14,6 +14,14 @@ contract SwapToken is Ownable {
 
     mapping(address => mapping(address => Rate)) private tokensToRate;
 
+    event ChangeRate(
+        address _tokenIn,
+        address _tokenOut,
+        uint256 _rate,
+        uint32 _rateDecimal
+    );
+    event Swap(address _tokenIn, address _tokenOut, uint256 _amountIn);
+
     receive() external payable {}
 
     function setTokenRate(
@@ -24,6 +32,19 @@ contract SwapToken is Ownable {
     ) external onlyOwner {
         tokensToRate[_tokenIn][_tokenOut].rate = _rate;
         tokensToRate[_tokenIn][_tokenOut].rateDecimal = _rateDecimal;
+
+        emit ChangeRate(_tokenIn, _tokenOut, _rate, _rateDecimal);
+    }
+
+    function getTokenRate(address _tokenIn, address _tokenOut)
+        external
+        view
+        returns (uint256, uint32)
+    {
+        Rate memory tokenRate = tokensToRate[_tokenIn][_tokenOut];
+        require(tokenRate.rate > 0, "Token rate must be greater than zero");
+
+        return (tokenRate.rate, tokenRate.rateDecimal);
     }
 
     function swap(
@@ -52,6 +73,8 @@ contract SwapToken is Ownable {
 
         _handleInCome(_tokenIn, msg.sender, amountIn);
         _handleOutcome(_tokenOut, msg.sender, amountOut);
+
+        emit Swap(_tokenIn, _tokenOut, _amountIn);
     }
 
     function _handleInCome(
