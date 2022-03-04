@@ -124,6 +124,7 @@
             width: 100%;
 
             .token-amount--text {
+              overflow: auto;
               font-size: 36px;
               margin: 0;
               flex: 1 1 auto;
@@ -159,7 +160,7 @@
       }
 
       .form-submit {
-        margin-top: 60px;
+        margin-top: 15px;
         button {
           cursor: pointer;
           width: 100%;
@@ -177,6 +178,16 @@
             background: #72f34b;
             border: 2px solid #000;
           }
+        }
+      }
+
+      .form-errors {
+        margin-top: 45px;
+        p {
+          margin: 0;
+          font-size: 16px;
+          color: #72f34b;
+          font-style: italic;
         }
       }
     }
