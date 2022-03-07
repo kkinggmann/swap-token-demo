@@ -4,6 +4,7 @@ require("dotenv").config();
 
 module.exports = {
   paths: {
+    cache: "./client/src/cache",
     artifacts: "./client/src/artifacts",
   },
   solidity: "0.8.4",

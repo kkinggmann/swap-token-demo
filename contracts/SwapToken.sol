@@ -20,7 +20,12 @@ contract SwapToken is Ownable {
         uint256 _rate,
         uint32 _rateDecimal
     );
-    event Swap(address _tokenIn, address _tokenOut, uint256 _amountIn);
+    event Swap(
+        address _tokenIn,
+        address _tokenOut,
+        uint256 _amountIn,
+        uint256 amountOut
+    );
 
     receive() external payable {}
 
@@ -74,7 +79,7 @@ contract SwapToken is Ownable {
         _handleInCome(_tokenIn, msg.sender, amountIn);
         _handleOutcome(_tokenOut, msg.sender, amountOut);
 
-        emit Swap(_tokenIn, _tokenOut, _amountIn);
+        emit Swap(_tokenIn, _tokenOut, amountIn, amountOut);
     }
 
     function _handleInCome(
