@@ -1,5 +1,6 @@
 const {ethers} = require("hardhat");
 const {utils} = ethers;
+const fs = require("fs");
 
 async function main() {
   [deployer, userX] = await ethers.getSigners();
@@ -40,9 +41,9 @@ async function main() {
     .connect(deployer)
     .setTokenRate(zeroAddress, tokenB.address, 100, 0);
 
-  console.log("Token A deployed to:", tokenA.address);
-  console.log("Token B deployed to:", tokenB.address);
-  console.log("Pool Token deployed to:", tokenPool.address);
+  const result = `export const tokenAAddress = "${tokenA.address}";\nexport const tokenBAddress = "${tokenB.address}";\nexport const tokenPoolAddress = "${tokenPool.address}";`;
+
+  fs.writeFileSync(`${process.cwd()}/client/src/config.js`, result);
 }
 
 main()

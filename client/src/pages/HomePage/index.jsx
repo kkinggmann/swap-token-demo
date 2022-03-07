@@ -15,6 +15,7 @@ import ERC20TokenArtifact from "../../artifacts/contracts/ERC20Token.sol/ERC20To
 import SwapTokenArtifact from "../../artifacts/contracts/SwapToken.sol/SwapToken.json";
 import {ethers} from "ethers";
 import {useMemo} from "react";
+import {tokenAAddress, tokenBAddress, tokenPoolAddress} from "../../config";
 
 const HARDHAT_NETWORK_ID = "1337";
 const zeroAddress = "0x0000000000000000000000000000000000000000";
@@ -60,7 +61,7 @@ function HomePage() {
     return tokenPool;
   };
 
-  const tokenPool = getTokenPool("0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0");
+  const tokenPool = getTokenPool(tokenPoolAddress);
 
   const getERC20TokenInfo = useCallback(
     async (tokenAddress, userAddress) => {
@@ -76,21 +77,15 @@ function HomePage() {
         10 ** decimal
       ).toString();
       const address = token.address;
-      return {value, address, balance, poolBalance};
+      return {value, address, balance, poolBalance, decimal};
     },
     [getERC20Token, tokenPool.address]
   );
 
   useEffect(() => {
     const inititalTokenList = async (userAddress, poolAddress) => {
-      const tokenA = await getERC20TokenInfo(
-        "0x5FbDB2315678afecb367f032d93F642f64180aa3",
-        userAddress
-      );
-      const tokenB = await getERC20TokenInfo(
-        "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-        userAddress
-      );
+      const tokenA = await getERC20TokenInfo(tokenAAddress, userAddress);
+      const tokenB = await getERC20TokenInfo(tokenBAddress, userAddress);
       const nativeToken = {
         value: "ETH",
         address: zeroAddress,
@@ -98,6 +93,7 @@ function HomePage() {
         poolBalance: (
           (await provider.getBalance(poolAddress)) / 1e18
         ).toString(),
+        decimal: 18,
       };
 
       dispatch(addTokenToList(tokenA));
@@ -279,8 +275,10 @@ function HomePage() {
     }
 
     try {
+      let transaction;
+      let tx;
       if (tokenInOption.address === zeroAddress) {
-        const tx = await tokenPool.swap(
+        transaction = await tokenPool.swap(
           tokenInOption.address,
           tokenOutOption.address,
           0,
@@ -288,34 +286,36 @@ function HomePage() {
             value: utils.parseEther(tokenInAmount.toString()),
           }
         );
-        //Get event infor
-        const receipt = await tx.wait();
+        tx = await transaction.wait();
+      } else {
+        const tokenIn = getERC20Token(tokenInOption.address);
+        if (tokenIn) {
+          await tokenIn.approve(
+            tokenPool.address,
+            utils.parseEther(tokenInAmount.toString())
+          );
 
-        if (receipt.status) {
-          window.location.reload();
+          transaction = await tokenPool.swap(
+            tokenInOption.address,
+            tokenOutOption.address,
+            utils.parseEther(tokenInAmount.toString())
+          );
+          tx = await transaction.wait();
         }
-        return;
       }
 
-      const tokenIn = getERC20Token(tokenInOption.address);
-      if (tokenIn) {
-        await tokenIn.approve(
-          tokenPool.address,
-          utils.parseEther(tokenInAmount.toString())
+      if (tx?.status) {
+        const event = (tx.events?.filter((x) => x.event === "Swap"))[0];
+        let [, , amountIn, amountOut] = event.args;
+        alert(
+          `Swap ${amountIn / 10 ** tokenInOption.decimal} ${
+            tokenInOption.value
+          } to ${amountOut / 10 ** tokenOutOption.decimal} ${
+            tokenOutOption.value
+          } successfully`
         );
 
-        const tx = await tokenPool.swap(
-          tokenInOption.address,
-          tokenOutOption.address,
-          utils.parseEther(tokenInAmount.toString())
-        );
-
-        //Get event infor
-        const receipt = await tx.wait();
-
-        if (receipt.status) {
-          window.location.reload();
-        }
+        window.location.reload();
       }
     } catch (error) {
       console.error(error);
