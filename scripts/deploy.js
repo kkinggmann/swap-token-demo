@@ -9,13 +9,21 @@ async function main() {
   const ERC20TokenFactory = await ethers.getContractFactory("ERC20Token");
   const SwapTokenFactory = await ethers.getContractFactory("SwapToken");
 
-  const tokenA = await upgrades.deployProxy(ERC20TokenFactory, ["Token A", "TOKA"], {
-    initializer: "__ERC20Token_init",
-  });
+  const tokenA = await upgrades.deployProxy(
+    ERC20TokenFactory,
+    ["Token A", "TOKA", utils.parseEther("100")],
+    {
+      initializer: "__ERC20Token_init",
+    }
+  );
 
-  const tokenB = await upgrades.deployProxy(ERC20TokenFactory, ["Token B", "TOKB"], {
-    initializer: "__ERC20Token_init",
-  });
+  const tokenB = await upgrades.deployProxy(
+    ERC20TokenFactory,
+    ["Token B", "TOKB", utils.parseEther("100")],
+    {
+      initializer: "__ERC20Token_init",
+    }
+  );
 
   const tokenPool = await upgrades.deployProxy(SwapTokenFactory, [], {
     initializer: "__Swap_init",
@@ -24,9 +32,6 @@ async function main() {
   await tokenA.deployed();
   await tokenB.deployed();
   await tokenPool.deployed();
-
-  await tokenA.mint(deployer.address, utils.parseEther("100"));
-  await tokenB.mint(deployer.address, utils.parseEther("100"));
 
   await tokenA.transfer(tokenPool.address, utils.parseEther("0.5"));
   await tokenB.transfer(tokenPool.address, utils.parseEther("0.5"));
