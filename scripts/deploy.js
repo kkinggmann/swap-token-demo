@@ -1,4 +1,4 @@
-const {ethers} = require("hardhat");
+const {ethers, upgrades} = require("hardhat");
 const {utils} = ethers;
 const fs = require("fs");
 
@@ -6,16 +6,27 @@ async function main() {
   [deployer, userX] = await ethers.getSigners();
   const zeroAddress = "0x0000000000000000000000000000000000000000";
 
-  const ERC20Token = await ethers.getContractFactory("ERC20Token");
-  const SwapToken = await ethers.getContractFactory("SwapToken");
+  const ERC20TokenFactory = await ethers.getContractFactory("ERC20Token");
+  const SwapTokenFactory = await ethers.getContractFactory("SwapToken");
 
-  const tokenA = await ERC20Token.deploy("Token A", "TOKA", 100, 18);
-  const tokenB = await ERC20Token.deploy("Token B", "TOKB", 100, 18);
-  const tokenPool = await SwapToken.deploy();
+  const tokenA = await upgrades.deployProxy(ERC20TokenFactory, ["Token A", "TOKA"], {
+    initializer: "__ERC20Token_init",
+  });
+
+  const tokenB = await upgrades.deployProxy(ERC20TokenFactory, ["Token B", "TOKB"], {
+    initializer: "__ERC20Token_init",
+  });
+
+  const tokenPool = await upgrades.deployProxy(SwapTokenFactory, [], {
+    initializer: "__Swap_init",
+  });
 
   await tokenA.deployed();
   await tokenB.deployed();
   await tokenPool.deployed();
+
+  await tokenA.mint(deployer.address, utils.parseEther("100"));
+  await tokenB.mint(deployer.address, utils.parseEther("100"));
 
   await tokenA.transfer(tokenPool.address, utils.parseEther("0.5"));
   await tokenB.transfer(tokenPool.address, utils.parseEther("0.5"));

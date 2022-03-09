@@ -6,7 +6,7 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
-contract SwapToken is Initializable, OwnableUpgradeable {
+contract SwapTokenV2 is Initializable, OwnableUpgradeable {
     using SafeERC20Upgradeable for IERC20Upgradeable;
 
     struct Rate {
@@ -59,35 +59,35 @@ contract SwapToken is Initializable, OwnableUpgradeable {
         return (tokenRate.rate, tokenRate.rateDecimal);
     }
 
-    function swap(
-        address _tokenIn,
-        address _tokenOut,
-        uint256 _amountIn
-    ) external payable {
-        uint256 amountOut;
-        uint256 amountIn;
-        require(_tokenIn != _tokenOut, "Two exchange token must be different");
+    // function swap(
+    //     address _tokenIn,
+    //     address _tokenOut,
+    //     uint256 _amountIn
+    // ) external payable {
+    //     uint256 amountOut;
+    //     uint256 amountIn;
+    //     require(_tokenIn != _tokenOut, "Two exchange token must be different");
 
-        if (_tokenIn == address(0x0)) {
-            require(msg.value > 0, "Ether amount must be greater than zero");
+    //     if (_tokenIn == address(0x0)) {
+    //         require(msg.value > 0, "Ether amount must be greater than zero");
 
-            amountIn = msg.value;
-        } else {
-            require(_amountIn > 0, "Token amount must be greater than zero");
+    //         amountIn = msg.value;
+    //     } else {
+    //         require(_amountIn > 0, "Token amount must be greater than zero");
 
-            amountIn = _amountIn;
-        }
+    //         amountIn = _amountIn;
+    //     }
 
-        Rate memory tokenRate = tokensToRate[_tokenIn][_tokenOut];
-        require(tokenRate.rate > 0, "Token rate must be greater than zero");
+    //     Rate memory tokenRate = tokensToRate[_tokenIn][_tokenOut];
+    //     require(tokenRate.rate > 0, "Token rate must be greater than zero");
 
-        amountOut = (amountIn * tokenRate.rate) / 10**tokenRate.rateDecimal;
+    //     amountOut = (amountIn * tokenRate.rate) / 10**tokenRate.rateDecimal;
 
-        _handleInCome(_tokenIn, msg.sender, amountIn);
-        _handleOutcome(_tokenOut, msg.sender, amountOut);
+    //     _handleInCome(_tokenIn, msg.sender, amountIn);
+    //     _handleOutcome(_tokenOut, msg.sender, amountOut);
 
-        emit Swap(_tokenIn, _tokenOut, amountIn, amountOut);
-    }
+    //     emit Swap(_tokenIn, _tokenOut, amountIn, amountOut);
+    // }
 
     function _handleInCome(
         address _tokenIn,
