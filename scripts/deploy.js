@@ -35,7 +35,8 @@ async function main() {
 
   await tokenA.transfer(tokenPool.address, utils.parseEther("0.5"));
   await tokenB.transfer(tokenPool.address, utils.parseEther("0.5"));
-  await userX.sendTransaction({
+
+  await deployer.sendTransaction({
     to: tokenPool.address,
     value: utils.parseEther("0.5"),
   });

@@ -1,0 +1,431 @@
+{
+  "_format": "hh-sol-cache-2",
+  "files": {
+    "/home/longcn/swap-tokens-demo/contracts/ERC20Token.sol": {
+      "lastModificationDate": 1646907820270,
+      "contentHash": "435429473c39b678b46f6d071d56d4ca",
+      "sourceName": "contracts/ERC20Token.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "ERC20Token"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol": {
+      "lastModificationDate": 1646723899732,
+      "contentHash": "41f034b817abdbfcced998bf8c9fd34a",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "./IERC20Upgradeable.sol",
+        "./extensions/IERC20MetadataUpgradeable.sol",
+        "../../utils/ContextUpgradeable.sol",
+        "../../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ERC20Upgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol": {
+      "lastModificationDate": 1646723899696,
+      "contentHash": "11b77de3cb69dfc6b342ec87bd09cbdd",
+      "sourceName": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../utils/ContextUpgradeable.sol",
+        "../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "OwnableUpgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol": {
+      "lastModificationDate": 1646723899732,
+      "contentHash": "42737d1d02061ade4f91d1e08b45f835",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC20Upgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol": {
+      "lastModificationDate": 1646723899748,
+      "contentHash": "9efcd5467a7f0bf533910ee8a267adb2",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../IERC20Upgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "IERC20MetadataUpgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
+      "lastModificationDate": 1646723899696,
+      "contentHash": "6200b84950eb05b4a92a39fd1d6e0f9b",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "ContextUpgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
+      "lastModificationDate": 1646723899732,
+      "contentHash": "49c8ad51a559f6dda13d35874f7dfdb9",
+      "sourceName": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../../utils/AddressUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "Initializable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
+      "lastModificationDate": 1646723899696,
+      "contentHash": "b70d2e0552ab1f44f7e44b5f8379c358",
+      "sourceName": "@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        "^0.8.1"
+      ],
+      "artifacts": [
+        "AddressUpgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/contracts/SwapTokenV2.sol": {
+      "lastModificationDate": 1646881730318,
+      "contentHash": "cfe790d4fd39e88344622231b4e2df0d",
+      "sourceName": "contracts/SwapTokenV2.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "SwapTokenV2"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol": {
+      "lastModificationDate": 1646723899732,
+      "contentHash": "069940552da74793ab16791ffa99c013",
+      "sourceName": "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "../IERC20Upgradeable.sol",
+        "../../../utils/AddressUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.0"
+      ],
+      "artifacts": [
+        "SafeERC20Upgradeable"
+      ]
+    },
+    "/home/longcn/swap-tokens-demo/contracts/SwapToken.sol": {
+      "lastModificationDate": 1646907874518,
+      "contentHash": "befd47f04da3aa52feb5bb2746b5e8f2",
+      "sourceName": "contracts/SwapToken.sol",
+      "solcConfig": {
+        "version": "0.8.4",
+        "settings": {
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.4"
+      ],
+      "artifacts": [
+        "SwapToken"
+      ]
+    }
+  }
+}

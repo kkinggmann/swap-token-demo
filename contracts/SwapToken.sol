@@ -54,7 +54,7 @@ contract SwapToken is Initializable, OwnableUpgradeable {
         returns (uint256, uint32)
     {
         Rate memory tokenRate = tokensToRate[_tokenIn][_tokenOut];
-        require(tokenRate.rate > 0, "Token rate must be greater than zero");
+        require(tokenRate.rate > 0, "Token rate must be greater than zero!");
 
         return (tokenRate.rate, tokenRate.rateDecimal);
     }
@@ -66,20 +66,20 @@ contract SwapToken is Initializable, OwnableUpgradeable {
     ) external payable {
         uint256 amountOut;
         uint256 amountIn;
-        require(_tokenIn != _tokenOut, "Two exchange token must be different");
+        require(_tokenIn != _tokenOut, "Two exchange token must be different!");
 
         if (_tokenIn == address(0x0)) {
-            require(msg.value > 0, "Ether amount must be greater than zero");
+            require(msg.value > 0, "Ether amount must be greater than zero!");
 
             amountIn = msg.value;
         } else {
-            require(_amountIn > 0, "Token amount must be greater than zero");
+            require(_amountIn > 0, "Token amount must be greater than zero!");
 
             amountIn = _amountIn;
         }
 
         Rate memory tokenRate = tokensToRate[_tokenIn][_tokenOut];
-        require(tokenRate.rate > 0, "Token rate must be greater than zero");
+        require(tokenRate.rate > 0, "Token rate must be greater than zero!");
 
         amountOut = (amountIn * tokenRate.rate) / 10**tokenRate.rateDecimal;
 
@@ -109,7 +109,7 @@ contract SwapToken is Initializable, OwnableUpgradeable {
     ) internal {
         if (_tokenOut == address(0x0)) {
             (bool sent, ) = _receiver.call{value: _amountOut}("");
-            require(sent, "Transfer outcome token failed");
+            require(sent, "Transfer outcome token failed!");
             return;
         }
 

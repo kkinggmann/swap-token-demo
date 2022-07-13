@@ -18,6 +18,7 @@ import {useMemo} from "react";
 import {tokenAAddress, tokenBAddress, tokenPoolAddress} from "../../config";
 
 const HARDHAT_NETWORK_ID = "1337";
+const ROPSTEN_NETWORK_ID = "3";
 const zeroAddress = "0x0000000000000000000000000000000000000000";
 const {utils} = ethers;
 
@@ -32,6 +33,7 @@ function HomePage() {
   const [tokenOutAmount, setTokenOutAmount] = useState(0);
   const [tokenRate, setTokenRate] = useState(0);
   const [errorMessages, setErrorMessages] = useState([]);
+  const [isApproved, setIsApproved] = useState(false);
 
   const provider = useMemo(
     () => new ethers.providers.Web3Provider(window.ethereum),
@@ -116,8 +118,11 @@ function HomePage() {
   const connectWallet = async (e) => {
     e.preventDefault();
 
-    if (window.ethereum.networkVersion !== HARDHAT_NETWORK_ID) {
-      alert("Please connect Metamask to Localhost:8545");
+    if (
+      window.ethereum.networkVersion !== HARDHAT_NETWORK_ID &&
+      window.ethereum.networkVersion !== ROPSTEN_NETWORK_ID
+    ) {
+      alert("Please connect Metamask to Localhost:8545 or Rospten");
       return;
     }
 
@@ -243,7 +248,7 @@ function HomePage() {
     }
   };
 
-  const handleSwapToken = async (e) => {
+  const handleApproveToken = async (e) => {
     e.preventDefault();
     const errors = [];
 
@@ -278,6 +283,34 @@ function HomePage() {
       let transaction;
       let tx;
       if (tokenInOption.address === zeroAddress) {
+        setIsApproved(true);
+        return;
+      } else {
+        const tokenIn = getERC20Token(tokenInOption.address);
+        if (tokenIn) {
+          transaction = await tokenIn.approve(
+            tokenPool.address,
+            utils.parseEther(tokenInAmount.toString())
+          );
+
+          tx = await transaction.wait();
+        }
+      }
+
+      if (tx?.status) {
+        setIsApproved(true);
+      }
+    } catch (error) {
+      setIsApproved(false);
+      console.error(error);
+    }
+  };
+
+  const handleSwapToken = async (e) => {
+    try {
+      let transaction;
+      let tx;
+      if (tokenInOption.address === zeroAddress) {
         transaction = await tokenPool.swap(
           tokenInOption.address,
           tokenOutOption.address,
@@ -290,11 +323,6 @@ function HomePage() {
       } else {
         const tokenIn = getERC20Token(tokenInOption.address);
         if (tokenIn) {
-          await tokenIn.approve(
-            tokenPool.address,
-            utils.parseEther(tokenInAmount.toString())
-          );
-
           transaction = await tokenPool.swap(
             tokenInOption.address,
             tokenOutOption.address,
@@ -411,9 +439,18 @@ function HomePage() {
             ))}
           </div>
           <div className="form-submit">
-            <Button className="btn btn-secondary" onClick={handleSwapToken}>
-              Swap
-            </Button>
+            {isApproved ? (
+              <Button className="btn btn-secondary" onClick={handleSwapToken}>
+                Swap
+              </Button>
+            ) : (
+              <Button
+                className="btn btn-secondary"
+                onClick={handleApproveToken}
+              >
+                Approve
+              </Button>
+            )}
           </div>
         </div>
       </div>
